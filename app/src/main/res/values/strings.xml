@@ -11,5 +11,9 @@
     <string name="label_amount">Amount</string>
     <string name="label_get_token">Get Token</string>
     <string name="label_launch_game">Launch Game</string>
+    <string name="label_show_all">Show all</string>
+    <string name="label_spin">Spin</string>
+    <string name="label_pending_transaction">Pending Transaction</string>
+    <string name="label_ok">OK</string>
 
 </resources>

@@ -10,4 +10,10 @@
 
     <style name="Theme.AppTheme.Light.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar" />
 
+    <style name="button_style_01">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@color/color_primary</item>
+        <item name="android:textSize">16sp</item>
+
+    </style>
 </resources>

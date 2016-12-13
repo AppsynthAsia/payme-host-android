@@ -7,6 +7,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import net.appsynth.android.hsbcpaymewheel.sdk.HSBCGame;
+import net.appsynth.android.hsbcpaymewheel.sdk.errors.HGError;
+import net.appsynth.android.hsbcpaymewheel.sdk.interfaces.HGSetPlayerInterface;
+import net.appsynth.paymehost.utils.DialogUtils;
+
 
 /**
  * Created by jeeraphan on 12/1/16.
@@ -25,33 +30,33 @@ public class LoginActivity extends AppCompatActivity {
         final EditText nameEditText = (EditText) findViewById(R.id.name_edittext);
         Button loginButton = (Button) findViewById(R.id.login_button);
 
-//        HSBCGame.init(API_KEY, SECRET_KEY);
-//
-//        loginButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                final String name = nameEditText.getText().toString();
-//
-//                if(name.isEmpty()){
-//                    return;
-//                }
-//
-//                HSBCGame.setPlayerId(name, new HGSetPlayerInterface() {
-//                    @Override
-//                    public void onSuccess() {
-//
-//                        HomeActivity.openActivity(LoginActivity.this, name);
-//
-//                    }
-//
-//                    @Override
-//                    public void onFail(HGError error) {
-//
-//                    }
-//                });
-//            }
-//        });
+        HSBCGame.init(API_KEY, SECRET_KEY);
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                final String name = nameEditText.getText().toString();
+
+                if(name.isEmpty()){
+                    return;
+                }
+
+                HSBCGame.setPlayerId(name, new HGSetPlayerInterface() {
+                    @Override
+                    public void onSuccess() {
+                        HomeActivity.openActivity(LoginActivity.this, name);
+                    }
+
+                    @Override
+                    public void onFail(HGError error) {
+
+                        DialogUtils.showOKialog(LoginActivity.this, "Error code :" + error.getErrorCode());
+
+                    }
+                });
+            }
+        });
 
     }
 

@@ -1,1 +1,2 @@
-include ':app'
+include ':app', ':hsbcpaymesdk'
+project(':hsbcpaymesdk').projectDir = new File('hsbcpaymespinner')

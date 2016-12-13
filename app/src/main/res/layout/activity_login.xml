@@ -9,16 +9,15 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_margin="@dimen/activity_margin"
-        android:hint="@string/label_name"
-        />
+        android:hint="@string/label_name" />
 
     <Button
         android:id="@+id/login_button"
+        style="@style/button_style_01"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_login"
-        android:layout_centerHorizontal="true"
         android:layout_below="@+id/name_edittext"
-        />
+        android:layout_centerHorizontal="true"
+        android:text="@string/label_login" />
 
 </RelativeLayout>
