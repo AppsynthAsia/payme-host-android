@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Payme Host</string>
+
+    <!-- login -->
+    <string name="label_login">Login</string>
+    <string name="label_name">Name</string>
+
+    <!-- home -->
+    <string name="label_player_id">PlayerID</string>
+    <string name="label_receiver_id">ReceiverID</string>
+    <string name="label_amount">Amount</string>
+    <string name="label_get_token">Get Token</string>
+    <string name="label_launch_game">Launch Game</string>
+
+</resources>
