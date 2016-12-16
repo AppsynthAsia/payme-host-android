@@ -5,26 +5,25 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import net.appsynth.android.hsbcpaymewheel.activities.GameStartActivity;
-import net.appsynth.android.hsbcpaymewheel.constants.HGLanguage;
 import net.appsynth.android.hsbcpaymewheel.models.HGTransaction;
+import net.appsynth.android.hsbcpaymewheel.sdk.HGLanguage;
 import net.appsynth.android.hsbcpaymewheel.sdk.HSBCGame;
 import net.appsynth.android.hsbcpaymewheel.sdk.errors.HGError;
 import net.appsynth.android.hsbcpaymewheel.sdk.interfaces.HGGameFinishInterface;
 import net.appsynth.android.hsbcpaymewheel.sdk.interfaces.HGLaunchGameInterface;
-import net.appsynth.android.hsbcpaymewheel.sdk.interfaces.HGNumberGameTokenInterface;
-import net.appsynth.android.hsbcpaymewheel.sdk.interfaces.HGRequestGameInterface;
-import net.appsynth.android.hsbcpaymewheel.utils.DialogUtils;
+import net.appsynth.android.hsbcpaymewheel.sdk.interfaces.HGNumberInterface;
+import net.appsynth.android.hsbcpaymewheel.sdk.interfaces.HGRequestPendingInterface;
+import net.appsynth.android.hsbcpaymewheel.sdk.interfaces.HGRequestTokenInterface;
+import net.appsynth.paymehost.utils.DialogUtils;
 
 import java.util.List;
-
-import okhttp3.internal.Util;
 
 
 /**
@@ -40,6 +39,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mPendingTextView;
     private TextView mSpinTextView;
 
+    private Menu mMenu;
+    private HGLanguage mCurrentLanguage = HGLanguage.ENGLISH;
+
     private static final String EXTRA_NAME = "extra_name";
 
     @Override
@@ -48,9 +50,44 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_home);
 
         initView();
-        
-        getPlayerToken();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        getPlayerToken();
+        getPendingTransaction();
+    }
+/*
+        Uncomment below to turn on change language menu.
+ */
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        mMenu = menu;
+//        getMenuInflater().inflate(R.menu.menu_language, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//
+//        mMenu.findItem(R.id.action_current_language).setTitle(item.getTitle());
+//
+//        switch (item.getItemId()) {
+//            case R.id.action_en:
+//                mCurrentLanguage = HGLanguage.ENGLISH;
+//                return true;
+//            case R.id.action_zhs:
+//                mCurrentLanguage = HGLanguage.CHINESE_SIMPLIFIED;
+//                return true;
+//            case R.id.action_zht:
+//                mCurrentLanguage = HGLanguage.CHINESE_TRADITIONAL;
+//                return true;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
 
     private void initView() {
         mPlayerIDEditText = (EditText) findViewById(R.id.playerId_editText);
@@ -86,13 +123,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
-    public static void openActivity(Activity pActivity, String name) {
-        Intent intent = new Intent(pActivity, HomeActivity.class);
-        intent.putExtra(EXTRA_NAME, name);
-        pActivity.startActivity(intent);
-        pActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-    }
-
     private void hideKeyboard(){
         View view = this.getCurrentFocus();
         if (view != null) {
@@ -100,6 +130,193 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
+
+    private void getGameToken(){
+        if (!isVerifyGetToken()){
+            DialogUtils.showOKialog(this, getString(R.string.verify_get_token_fail));
+            return;
+        }
+
+        hideKeyboard();
+
+        String receiverID = mReceiverIDEdittext.getText().toString();
+        String amount = mAmountEditText.getText().toString();
+
+        mGetTokenButton.setVisibility(View.INVISIBLE);
+
+        HSBCGame.requestForGameToken(HomeActivity.this, mCurrentLanguage, receiverID, Integer.parseInt(amount), new HGRequestTokenInterface() {
+            @Override
+            public void onSuccess() {
+                mGetTokenButton.setVisibility(View.VISIBLE);
+                getPlayerToken();
+            }
+
+            @Override
+            public void onFail(HGError error) {
+                mGetTokenButton.setVisibility(View.VISIBLE);
+                //DialogUtils.showOKialog(HomeActivity.this, "requestForGameToken onFail: "+error.getErrorCode());
+            }
+
+            @Override
+            public void onFailHasPendingPayment(HGError error, List<HGTransaction> transactionList) {
+                mGetTokenButton.setVisibility(View.VISIBLE);
+                String msg = "Host app handle error code: " + error.getErrorCode();
+                DialogUtils.showHostAppDialog(HomeActivity.this, msg);
+                getPlayerToken();
+            }
+        });
+    }
+
+    private void getPlayerToken() {
+
+        mSpinTextView.setText(getResources().getString(R.string.loading));
+
+        HSBCGame.numberOfGameToken(new HGNumberInterface() {
+            @Override
+            public void onSuccess(int numberOfToken) {
+                mSpinTextView.setText(String.valueOf(numberOfToken));
+            }
+
+            @Override
+            public void onFail(HGError error) {
+                //DialogUtils.showHostAppDialog(HomeActivity.this, "numberOfGameToken onFail: "+error.getErrorCode());
+            }
+        });
+    }
+
+    private void getPendingTransaction() {
+
+        mPendingTextView.setText(getResources().getString(R.string.loading));
+
+        HSBCGame.getPendingTransactions(new HGRequestPendingInterface() {
+            @Override
+            public void onSuccess(List<HGTransaction> pendingTransaction) {
+                mPendingTextView.setText(String.valueOf(pendingTransaction.size()));
+            }
+
+            @Override
+            public void onFail(HGError error) {
+                //DialogUtils.showHostAppDialog(HomeActivity.this, "Error code: "+error.getErrorCode());
+            }
+        });
+
+    }
+
+
+    private void openPendingTransaction() {
+
+        /**
+         *
+
+         HSBCGame.presentPopup(HGLanguage.CHINESE_SIMPLIFIED, this, new HGDialogInterface() {
+            @Override
+            public void onSuccess() {
+                Log.d("nut", "onSuccess");
+            }
+        });
+
+
+        HSBCGame.campaignOfAvailable(new HGCampaignListInterface() {
+            @Override
+            public void onSuccess(List<HGCampaign> campaign) {
+                Log.d("nut", ""+ campaign.size());
+            }
+
+
+            @Override
+            public void onFail(HGError error) {
+
+            }
+        });
+
+
+        HSBCGame.getCurrentLiveCampaign(new HGCampaignInterface() {
+            @Override
+            public void onSuccess(HGCampaign campaign) {
+                Log.d("nut", ""+ campaign.getDateEnd());
+
+            }
+
+            @Override
+            public void onFail(HGError error) {
+
+            }
+        });
+
+
+        HSBCGame.getRemainingMoneyInPool(new HGNumberInterface() {
+            @Override
+            public void onSuccess(int value) {
+                Log.d("nut", ""+ value);
+
+            }
+
+            @Override
+            public void onFail(HGError error) {
+
+            }
+        });
+
+
+
+        HSBCGame.getRemainingTokenInPool(new HGNumberInterface() {
+            @Override
+            public void onSuccess(int value) {
+                Log.d("nut", ""+ value);
+
+            }
+
+            @Override
+            public void onFail(HGError error) {
+
+            }
+        });
+
+        *
+        **/
+
+
+        PendingTransactionActivity.openActivity(this);
+
+    }
+
+    private void openGame() {
+
+        int num = 0;
+
+        try {
+            num = Integer.parseInt(mSpinTextView.getText().toString());
+        }
+        catch (Exception e) {
+
+        }
+
+        if (num <= 0) {
+            return;
+        }
+
+        HSBCGame.presentGameActivity(this, mCurrentLanguage, new HGLaunchGameInterface() {
+
+            @Override
+            public void onFailHasPendingPayment(HGError error, List<HGTransaction> transactionList) {
+                String msg = "Host app handle error code: " + error.getErrorCode();
+                DialogUtils.showHostAppDialog(HomeActivity.this, msg);
+            }
+
+            @Override
+            public void onFail(HGError error) {
+                //DialogUtils.showHostAppDialog(HomeActivity.this, "presentGameActivity onFail: " + error.getErrorCode());
+            }
+
+        }, new HGGameFinishInterface() {
+            @Override
+            public void onSuccess(List<HGTransaction> newTransactionList) {
+                //DialogUtils.showHostAppDialog(HomeActivity.this, "pendingTransaction : " + newTransactionList.size());
+            }
+        });
+
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -111,88 +328,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 openGame();
                 break;
             case R.id.show_pending_transaction_button:
-                GameStartActivity.openActivity(HomeActivity.this);
+                openPendingTransaction();
                 break;
         }
     }
 
-    private void getGameToken(){
-        if (!isVerifyGetToken()){
-            return;
-        }
 
-        hideKeyboard();
-
-        String receiverID = mReceiverIDEdittext.getText().toString();
-        String amount = mAmountEditText.getText().toString();
-
-        HSBCGame.requestForGameToken(HomeActivity.this, HGLanguage.ENGLISH, receiverID, Integer.parseInt(amount), new HGRequestGameInterface() {
-            @Override
-            public void onSuccess() {
-                getPlayerToken();
-            }
-
-            @Override
-            public void onFail(HGError error) {
-
-                DialogUtils.showOKialog(HomeActivity.this, "requestForGameToken onFail: "+error.getErrorCode());
-
-            }
-
-            @Override
-            public void onFailHasPendingPayment(HGError error, List<HGTransaction> transactionList) {
-
-                DialogUtils.showOKialog(HomeActivity.this, "onFailHasPendingPayment: "+error.getErrorCode() + " pendingNum : " + transactionList.size());
-
-            }
-        });
+    public static void openActivity(Activity pActivity, String name) {
+        Intent intent = new Intent(pActivity, HomeActivity.class);
+        intent.putExtra(EXTRA_NAME, name);
+        pActivity.startActivity(intent);
+        pActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
-    public void getPlayerToken() {
-
-        HSBCGame.numberOfGameToken(new HGNumberGameTokenInterface() {
-            @Override
-            public void onSuccess(int numberOfToken) {
-                mSpinTextView.setText(String.valueOf(numberOfToken));
-            }
-
-            @Override
-            public void onFail(HGError error) {
-
-                DialogUtils.showOKialog(HomeActivity.this, "numberOfGameToken onFail: "+error.getErrorCode());
-
-            }
-        });
-    }
-
-    public void openGame() {
-
-        HSBCGame.presentGameActivity(this, HGLanguage.ENGLISH, new HGLaunchGameInterface() {
-            @Override
-            public void onOpenGameSuccess(int playerTokenAmount) {
-
-            }
-
-            @Override
-            public void onFailHasPendingPayment(HGError error, List<HGTransaction> transactionList) {
-
-            }
-
-            @Override
-            public void onFail(HGError error) {
-
-            }
-        }, new HGGameFinishInterface() {
-            @Override
-            public void onSuccess(List<HGTransaction> pendingTransaction) {
-
-            }
-
-            @Override
-            public void onFail(HGError error) {
-
-            }
-        });
-
-    }
 }

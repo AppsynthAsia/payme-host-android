@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pending_choices">
+        <item>@string/reject_tran</item>
+        <item>@string/confirm_tran</item>
+        <item>@string/double_check_tran</item>
+
+    </string-array>
+
+</resources>

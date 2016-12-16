@@ -9,7 +9,7 @@ import android.widget.EditText;
 
 import net.appsynth.android.hsbcpaymewheel.sdk.HSBCGame;
 import net.appsynth.android.hsbcpaymewheel.sdk.errors.HGError;
-import net.appsynth.android.hsbcpaymewheel.sdk.interfaces.HGSetPlayerInterface;
+import net.appsynth.android.hsbcpaymewheel.sdk.interfaces.HGSuccessInterface;
 import net.appsynth.paymehost.utils.DialogUtils;
 
 
@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
 
-                HSBCGame.setPlayerId(name, new HGSetPlayerInterface() {
+                HSBCGame.setPlayerId(name, new HGSuccessInterface() {
                     @Override
                     public void onSuccess() {
                         HomeActivity.openActivity(LoginActivity.this, name);
@@ -50,9 +50,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     public void onFail(HGError error) {
-
-                        DialogUtils.showOKialog(LoginActivity.this, "Error code :" + error.getErrorCode());
-
+                        DialogUtils.showHostAppDialog(LoginActivity.this, "Can't set player id");
                     }
                 });
             }
