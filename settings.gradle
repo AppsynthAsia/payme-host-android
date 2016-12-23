@@ -1,1 +1,1 @@
-include ':app', ':HSBCSDK'
+include ':app', ':HSBCSDK1.3'

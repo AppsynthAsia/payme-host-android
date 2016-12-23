@@ -1,0 +1,2 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file('HSBCSDK1.3.aar'))

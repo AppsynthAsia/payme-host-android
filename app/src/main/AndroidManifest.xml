@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="net.appsynth.paymehost">
+    package="net.appsynth.paymehostdemo">
 
     <application
         android:allowBackup="true"
@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".LoginActivity"
+            android:name="net.appsynth.paymehostdemo.LoginActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,10 +18,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".HomeActivity"
+            android:name="net.appsynth.paymehostdemo.HomeActivity"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".PendingTransactionActivity"
+            android:name="net.appsynth.paymehostdemo.PendingTransactionActivity"
             android:label="@string/title_activity_pending_transaction"
             android:screenOrientation="portrait" />
     </application>

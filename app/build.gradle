@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.1"
     defaultConfig {
-        applicationId "net.appsynth.paymehost"
+        applicationId "net.appsynth.paymehostdemo"
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
@@ -33,6 +33,6 @@ dependencies {
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'com.cantrowitz:rxbroadcast:1.0.0'
     testCompile 'junit:junit:4.12'
-    compile project(':HSBCSDK')
+    compile project(':HSBCSDK1.3')
 }
 

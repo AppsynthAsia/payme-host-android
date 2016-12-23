@@ -1,2 +1,2 @@
 configurations.maybeCreate("default")
-artifacts.add("default", file('HSBCSDK-release3.aar'))
+artifacts.add("default", file('HSBCSDK1.2.aar'))

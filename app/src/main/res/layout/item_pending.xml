@@ -22,7 +22,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.67dp"
-        android:background="@color/colorGrayLine"
+        android:background="@android:color/darker_gray"
         />
 
 </LinearLayout>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="net.appsynth.paymehost.PendingTransactionActivity">
+    tools:context="net.appsynth.paymehostdemo.PendingTransactionActivity">
 
     <ScrollView
         android:id="@+id/pending_result_scrollview"
