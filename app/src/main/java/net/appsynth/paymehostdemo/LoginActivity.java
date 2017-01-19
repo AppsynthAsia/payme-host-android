@@ -32,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
         final EditText nameEditText = (EditText) findViewById(R.id.name_edittext);
         Button loginButton = (Button) findViewById(R.id.login_button);
 
-        HSBCGame.init(this, API_KEY, SECRET_KEY, HSBCEnvironment.UAT);
+        HSBCGame.init(this, API_KEY, SECRET_KEY, HSBCEnvironment.PROD);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override

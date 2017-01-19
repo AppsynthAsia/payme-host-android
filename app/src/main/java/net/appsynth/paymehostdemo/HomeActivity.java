@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import net.appsynth.paymehostdemo.utils.DialogUtils;
 
@@ -50,6 +51,18 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        HSBCGame.numberOfMoneyInPool(new HGNumberInterface() {
+            @Override
+            public void onSuccess(int value) {
+                Toast.makeText(HomeActivity.this, "Money in pool = " + value, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFail(HGError error) {
+                Toast.makeText(HomeActivity.this, "Money in pool error", Toast.LENGTH_LONG).show();
+            }
+        });
 
         initView();
     }
@@ -284,19 +297,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private void openGame() {
 
-        int num = 0;
-
-        try {
-            num = Integer.parseInt(mSpinTextView.getText().toString());
-        }
-        catch (Exception e) {
-
-        }
-
-        if (num <= 0) {
-            return;
-        }
-
         HSBCGame.presentGameActivity(this, HGLanguage.CHINESE_SIMPLIFIED, new HGLaunchGameInterface() {
 
             @Override
@@ -313,7 +313,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }, new HGGameFinishInterface() {
             @Override
             public void onSuccess(List<HGTransaction> newTransactionList) {
-                //DialogUtils.showHostAppDialog(HomeActivity.this, "pendingTransaction : " + newTransactionList.size());
+                DialogUtils.showHostAppDialog(HomeActivity.this, "pendingTransaction : " + newTransactionList.size());
             }
         });
 

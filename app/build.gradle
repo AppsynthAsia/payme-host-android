@@ -12,8 +12,14 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
         release {
-            minifyEnabled false
+            debuggable false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -33,6 +39,6 @@ dependencies {
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'com.cantrowitz:rxbroadcast:1.0.0'
     testCompile 'junit:junit:4.12'
-    compile project(':HSBCSDK1.3')
+    compile project(':HSBCSDK1.4.5')
 }
 
